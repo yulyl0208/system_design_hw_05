@@ -1,0 +1,51 @@
+components_manager:
+  task_processors:
+    main-task-processor:
+      worker_threads: 4
+
+    fs-task-processor:
+      worker_threads: 2
+
+  default_task_processor: main-task-processor
+
+  components:
+
+    server:
+      listener:
+        port: 8080
+        task_processor: main-task-processor
+
+    postgres-db:
+      dbconnection: postgres://user:pass@postgres:5432/fitness
+      blocking_task_processor: fs-task-processor
+
+    redis:
+      thread_pools:
+        redis-thread-pool:
+          worker_threads: 2
+
+      groups:
+        default:
+          hosts:
+            - host: redis
+              port: 6379
+
+    handler-exercises:
+      path: /exercises
+      method: GET
+      task_processor: main-task-processor
+
+    handler-workouts:
+      path: /workouts
+      method: POST
+      task_processor: main-task-processor
+
+    handler-workouts-history:
+      path: /workouts/history
+      method: GET
+      task_processor: main-task-processor
+
+    handler-workouts-stats:
+      path: /workouts/stats
+      method: GET
+      task_processor: main-task-processor
