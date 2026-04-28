@@ -1,0 +1,17 @@
+{
+  "FITNESS_RATE_LIMIT": {
+    "workouts_per_minute": 50,
+    "stats_per_minute": 30
+  },
+
+  "FITNESS_CACHE_TTL": {
+    "exercises": 600,
+    "history": 300,
+    "stats": 120
+  },
+
+  "FITNESS_FEATURES": {
+    "enable_stats": true,
+    "enable_cache": true
+  }
+}
