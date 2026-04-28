@@ -1,0 +1,74 @@
+version: "3.9"
+
+services:
+
+  app:
+    build: .
+    container_name: fitness-tracker-app
+
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: fitness
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+
+    volumes:
+      - ./configs:/app/configs:ro
+      - ./schemas:/app/schemas:ro
+
+    restart: unless-stopped
+
+
+  postgres:
+    image: postgres:15
+
+    container_name: fitness-postgres
+
+    environment:
+      POSTGRES_DB: fitness
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: pass
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U user -d fitness"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+    restart: unless-stopped
+
+
+  redis:
+    image: redis:7
+
+    container_name: fitness-redis
+
+    ports:
+      - "6379:6379"
+
+    command: ["redis-server", "--appendonly", "yes"]
+
+    volumes:
+      - redis_data:/data
+
+    restart: unless-stopped
+
+
+volumes:
+  postgres_data:
+  redis_data:
